@@ -203,6 +203,7 @@ Nᴀᴍᴇ - {}"""
 
     IMDB_TEMPLATE_TXT = """
 <b>𝙃𝙚𝙮 {message.from_user.mention},</b>
+
 <b>Hᴇʀᴇ ɪs Tʜᴇ Rᴇsᴜʟᴛ Fᴏʀ Yᴏᴜʀ {query}</b>
 
 <b>🏷 Title</b>: <a href={url}>{title}</a>
