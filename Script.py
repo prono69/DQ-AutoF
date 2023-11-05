@@ -197,7 +197,7 @@ Nᴀᴍᴇ - {}"""
 🔅 Sɪᴢᴇ : {file_size}
 ╰─────── • ◆ • ───────╯
 </b>
-<b>▫️ Cᴀᴘᴛɪᴏɴ : <i>{file_caption}</i></b>
+<b>▫️ Cᴀᴘᴛɪᴏɴ :</b> <i>{file_caption}</i>
 """
 
     IMDB_TEMPLATE_TXT = """
