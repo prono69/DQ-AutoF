@@ -1,13 +1,15 @@
 """Evaluate Python Code inside Telegram
 Syntax: .eval PythonCode"""
 
-import io
 import asyncio
-import os
+import io
 import json
+import os
 import sys
 import traceback
+
 from pyrogram import Client, filters
+
 from info import ADMINS
 from plugins.helpers.terminal import Terminal
 
@@ -71,15 +73,18 @@ async def eval(client, message):
 
 
 async def aexec(code, client, message):
-  p = lambda _x: print(_x)
-  reply = message.reply_to_message
-  r = reply
-  exec("async def __aexec(client, message, r, reply, p): "+ "".join(f"\n {l_}" for l_ in code.split("\n")))
-  return await locals()["__aexec"](client, message, r, reply, p)
+    def p(_x):
+        return print(_x)
 
-    
-    
-    
+    reply = message.reply_to_message
+    r = reply
+    exec(
+        "async def __aexec(client, message, r, reply, p): "
+        + "".join(f"\n {l_}" for l_ in code.split("\n"))
+    )
+    return await locals()["__aexec"](client, message, r, reply, p)
+
+
 @Client.on_message(filters.command("term") & filters.user(ADMINS))
 async def teml(bot, update):
     cmd = update.text.split(" ", 1)
@@ -124,4 +129,3 @@ async def teml(bot, update):
         return
     send = k.edit if k else update.reply
     await send(out_data)
- 
