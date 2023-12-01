@@ -76,7 +76,7 @@ async def _(client, message):
     resp = requests.get(url).json()
     link = resp["images"][0]["url"]
     # source = resp["images"][0]["source"]
-    btn = IKM([[IKB("💦 Source", url=f"{resp["images"][0]["source"]}")]])
+    btn = IKM([[IKB("💦 Source", url=f"{resp['images'][0]['source']}")]])
     try:
         if link.endswith(".gif"):
         	await client.send_animation(chat_id=message.chat.id, animation=link, caption=choose, reply_markup=btn, reply_to_message_id=reply_id)
