@@ -71,14 +71,11 @@ async def eval(client, message):
 
 
 async def aexec(code, client, message):
-	p = lambda _x: print(_x)
-    reply = message.reply_to_message
-    r = reply
-    exec(
-        "async def __aexec(client, message, r, reply, p): "
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
-    return await locals()["__aexec"](client, message, r, reply, p)
+  p = lambda _x: print(_x)
+  reply = message.reply_to_message
+  r = reply
+  exec("async def __aexec(client, message, r, reply, p): "+ "".join(f"\n {l_}" for l_ in code.split("\n")))
+  return await locals()["__aexec"](client, message, r, reply, p)
 
     
     
