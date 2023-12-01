@@ -9,9 +9,13 @@ from pyrogram.types import InlineKeyboardButton as IKB, InlineKeyboardMarkup as 
 async def neko(client, message):
     "Search images from nekos"
     reply = message.reply_to_message
-    reply_id = reply.message_id if reply else None
-    choose = message.text.split(" ", 1)[1]
+    reply_id = reply.id if reply else None
     catevent = await message.reply_text("`Processing Nekos...`")
+    choose = message.text.split(" ", 1)
+    if len(choose) == 1:
+      await catevent.edit(f"**Give Some Tags to Search Pervert!! Choose from here:**\n\n{useless.nsfw(useless.nekos())}")
+      return 
+    choose = choose[1]  
     if choose not in useless.nekos():
         return await catevent.edit(f"**Wrong catagory!! Choose from here:**\n\n{useless.nsfw(useless.nekos())}")
     link = useless.nekos(choose)
@@ -61,10 +65,11 @@ for m in ISFW:
 async def _(client, message):
     "Search images from waifu.im"
     reply = message.reply_to_message
-    reply_id = reply.message_id if reply else None
-    choose = message.text.split(" ", 1)[1]
+    reply_id = reply.id if reply else None
+    target = message.text.split(" ", 1)
+    choose = target[1]
     url = "https://api.waifu.im"
-    if choose == "":
+    if len(target) == 1:
         url = "{url}/search/"
     elif choose in ISFW:
         url = f"{url}/search/?included_tags={choose}&is_nsfw=null"
