@@ -66,10 +66,10 @@ async def _(client, message):
     "Search images from waifu.im"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
-    target = message.text.split(" ", 1)
+    target = message.text.split(None, 1)
     choose = target[1]
     url = "https://api.waifu.im"
-    if len(target) == 1:
+    if not choose:
         url = "{url}/search/"
     elif choose in ISFW:
         url = f"{url}/search/?included_tags={choose}&is_nsfw=null"
@@ -80,8 +80,10 @@ async def _(client, message):
     catevent = await message.reply_text("`Processing...`")
     resp = requests.get(url).json()
     link = resp["images"][0]["url"]
-    # source = resp["images"][0]["source"]
-    btn = IKM([[IKB("💦 Source", url=f"{resp['images'][0]['source']}")]])
+    source = resp["images"][0]["source"]
+    if not source:
+      source = "https://cat-bounce.com/"
+    btn = IKM([[IKB("💦 Source", url=f"{source}")]])
     try:
         if link.endswith(".gif"):
         	await client.send_animation(chat_id=message.chat.id, animation=link, caption=choose, reply_markup=btn, reply_to_message_id=reply_id)
