@@ -1,8 +1,10 @@
-import re
 import logging
+import re
+
 from pyrogram import Client, filters
-from info import DELETE_CHANNELS
+
 from database.ia_filterdb import Media, unpack_new_file_id
+from info import DELETE_CHANNELS
 
 logger = logging.getLogger(__name__)
 
@@ -22,27 +24,33 @@ async def deletemultiplemedia(bot, message):
 
     file_id, file_ref = unpack_new_file_id(media.file_id)
 
-    result = await Media.collection.delete_one({
-        '_id': file_id,
-    })
+    result = await Media.collection.delete_one(
+        {
+            "_id": file_id,
+        }
+    )
     if result.deleted_count:
-        logger.info('File is successfully deleted from database.')
+        logger.info("File is successfully deleted from database.")
     else:
         file_name = re.sub(r"(_|\-|\.|\+)", " ", str(media.file_name))
-        result = await Media.collection.delete_many({
-            'file_name': file_name,
-            'file_size': media.file_size,
-            'mime_type': media.mime_type
-            })
+        result = await Media.collection.delete_many(
+            {
+                "file_name": file_name,
+                "file_size": media.file_size,
+                "mime_type": media.mime_type,
+            }
+        )
         if result.deleted_count:
-            logger.info('File is successfully deleted from database.')
+            logger.info("File is successfully deleted from database.")
         else:
-            result = await Media.collection.delete_many({
-                'file_name': media.file_name,
-                'file_size': media.file_size,
-                'mime_type': media.mime_type
-            })
+            result = await Media.collection.delete_many(
+                {
+                    "file_name": media.file_name,
+                    "file_size": media.file_size,
+                    "mime_type": media.mime_type,
+                }
+            )
             if result.deleted_count:
-                logger.info('File is successfully deleted from database.')
+                logger.info("File is successfully deleted from database.")
             else:
-                logger.info('File not found in database.')
+                logger.info("File not found in database.")
