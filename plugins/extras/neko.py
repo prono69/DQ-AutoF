@@ -66,14 +66,15 @@ async def _(client, message):
     "Search images from waifu.im"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
-    choose = message.text.split(None, 1)[1]
-    url = "https://api.waifu.im"
+    target = message.text.split(None, 1)
+    url_ = "https://api.waifu.im"
+    if len(target) == 1:
+      url = f"{url_}/search"
+    choose = target[1]  
     if choose in ISFW:
-        url = f"{url}/search/?included_tags={choose}&is_nsfw=null"
+        url = f"{url_}/search/?included_tags={choose}&is_nsfw=null"
     elif choose in INSFW:
-        url = f"{url}/search/?included_tags={choose}"
-    else:
-        url = f"{url}/search"
+        url = f"{url_}/search/?included_tags={choose}"
     if choose not in waifu_help:
         return await message.reply_text(f"**Wrong Category!! Choose from below**\n\n{waifu_help}")
     catevent = await message.reply_text("`Processing...`")
