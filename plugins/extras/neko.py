@@ -67,10 +67,12 @@ async def _(client, message):
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
     target = message.text.split(None, 1)
+    choose = None
     url_ = "https://api.waifu.im"
     if len(target) == 1:
       url = f"{url_}/search"
-    choose = target[1]  
+    elif len(target) > 1:
+      choose = target[1]
     if choose in ISFW:
         url = f"{url_}/search/?included_tags={choose}&is_nsfw=null"
     elif choose in INSFW:
