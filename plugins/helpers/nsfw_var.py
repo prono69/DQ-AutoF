@@ -118,6 +118,16 @@ endpoints = {
         "api": "https://api.xsky.dev/",
         "checker": "url",
     },
+    "v7": {
+        "end": ["jav", "rb"],
+        "api": "https://scathach.redsplit.org/v3/nsfw/",
+        "checker": "url",
+    },
+    "v8": {
+        "end": ["hass", "hmidriff", "pgif", "4k", "holo", "hneko", "hkitsune", "kemonomimi", "hanal", "gonewild", "kanna", "pussy", "thigh", "hthigh", "gah", "coffee", "food", "paizuri", "tentacle", "hboobs"],
+        "api": "https://nekobot.xyz/api/image?type=",
+        "checker": "message",
+    },
 }
 
 
@@ -135,6 +145,8 @@ def nekos(endpoint=None, endpoints=endpoints):
         + endpoints["v3"]["end"]
         + endpoints["v4"]["end"]
         + endpoints["v5"]["end"]
+        + endpoints["v7"]["end"]
+        + endpoints["v8"]["end"]
     )
 
 

@@ -94,3 +94,56 @@ async def _(client, message):
     except Exception as e:
         await message.reply_text(e)
     await catevent.delete()    
+    
+    
+@Client.on_message(filters.command("jav"))
+async def neko(client, message):
+    "Search images from nekos"
+    reply = message.reply_to_message
+    reply_id = reply.id if reply else None
+    catevent = await message.reply_text("`Processing...`")
+    link = useless.nekos('jav')
+    await catevent.delete()
+    try:
+        if link.endswith(".gif"):
+        	await client.send_animation(chat_id=message.chat.id, animation=link, reply_to_message_id=reply_id)
+        else:
+        	await client.send_photo(chat_id=message.chat.id, photo=link, reply_to_message_id=reply_id)
+    except Exception as e:
+        await message.reply_text(e)    
+        
+        
+@Client.on_message(filters.command("pgif"))
+async def neko(client, message):
+    "Search images from nekos"
+    reply = message.reply_to_message
+    reply_id = reply.id if reply else None
+    catevent = await message.reply_text("`Processing...`")
+    rep = requests.get("https://scathach.redsplit.org/v3/nsfw/gif").json()
+    link = rep.get("url")
+    await catevent.delete()
+    try:
+        if link.endswith(".gif"):
+        	await client.send_animation(chat_id=message.chat.id, animation=link, reply_to_message_id=reply_id)
+        else:
+        	await client.send_photo(chat_id=message.chat.id, photo=link, reply_to_message_id=reply_id)
+    except Exception as e:
+        await message.reply_text(e)
+        
+
+@Client.on_message(filters.command("ahe"))
+async def neko(client, message):
+    "Search images from nekos"
+    reply = message.reply_to_message
+    reply_id = reply.id if reply else None
+    catevent = await message.reply_text("`Processing...`")
+    rep = requests.get("https://scathach.redsplit.org/v3/nsfw/ahegao").json()
+    link = rep.get("url")
+    await catevent.delete()
+    try:
+        if link.endswith(".gif"):
+        	await client.send_animation(chat_id=message.chat.id, animation=link, reply_to_message_id=reply_id)
+        else:
+        	await client.send_photo(chat_id=message.chat.id, photo=link, reply_to_message_id=reply_id)
+    except Exception as e:
+        await message.reply_text(e)
