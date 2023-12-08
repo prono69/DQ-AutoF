@@ -127,7 +127,7 @@ async def _(client, message):
 
 
 @Client.on_message(filters.command("jav"))
-async def neko(client, message):
+async def _(client, message):
     "Search images from nekos"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
@@ -148,7 +148,7 @@ async def neko(client, message):
 
 
 @Client.on_message(filters.command("pgif"))
-async def neko(client, message):
+async def _(client, message):
     "Search images from nekos"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
@@ -170,7 +170,7 @@ async def neko(client, message):
 
 
 @Client.on_message(filters.command("ahe"))
-async def neko(client, message):
+async def _(client, message):
     "Search images from nekos"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
