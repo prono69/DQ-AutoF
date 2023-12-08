@@ -78,7 +78,7 @@ for m in ISFW:
 
 
 @Client.on_message(filters.command("wi"))
-async def _(client, message):
+async def waifu(client, message):
     "Search images from waifu.im"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
@@ -127,8 +127,8 @@ async def _(client, message):
 
 
 @Client.on_message(filters.command("jav"))
-async def _(client, message):
-    "Search images from nekos"
+async def jav(client, message):
+    "Search random jav images"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
     catevent = await message.reply_text("`Processing...`")
@@ -148,8 +148,8 @@ async def _(client, message):
 
 
 @Client.on_message(filters.command("pgif"))
-async def _(client, message):
-    "Search images from nekos"
+async def pgif(client, message):
+    "Search random purn gifs"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
     catevent = await message.reply_text("`Processing...`")
@@ -170,8 +170,8 @@ async def _(client, message):
 
 
 @Client.on_message(filters.command("ahe"))
-async def _(client, message):
-    "Search images from nekos"
+async def ahegao(client, message):
+    "Search random ahegao images"
     reply = message.reply_to_message
     reply_id = reply.id if reply else None
     catevent = await message.reply_text("`Processing...`")
