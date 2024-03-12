@@ -44,7 +44,7 @@ async def neko(client, message):
                 reply_to_message_id=reply_id,
             )
     except Exception as e:
-        await message.reply_text(e)
+        await catevent.edit(f"Error:\n`{e}`")
 
 
 # This list is for waifu.im
