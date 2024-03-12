@@ -105,7 +105,7 @@ endpoints = {
             "uglybastard",
             "lewdneko",
         ],
-        "api": "http://51.161.33.197/api/",
+        "api": "https://akaneko.cuteasfubuki.xyz/api/",
         "checker": "url",
     },
     "v5": {
