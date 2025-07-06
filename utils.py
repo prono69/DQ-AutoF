@@ -433,15 +433,27 @@ def remove_escapes(text: str) -> str:
 
 
 def humanbytes(size):
-    if not size:
-        return ""
-    power = 2**10
-    n = 0
-    Dic_powerN = {0: ' ', 1: 'Ki', 2: 'Mi', 3: 'Gi', 4: 'Ti'}
-    while size > power:
-        size /= power
-        n += 1
-    return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+    """Convert bytes to human-readable format with proper spacing"""
+    if not size or size == 0:
+        return "0 B"
+    
+    units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    unit_index = 0
+    
+    while size >= 1024 and unit_index < len(units)-1:
+        size /= 1024
+        unit_index += 1
+    
+    if unit_index == 0:  # Bytes
+        return f"{int(size)} {units[unit_index]}"
+    
+    # Check if the size is a whole number
+    if size.is_integer():
+        return f"{int(size)} {units[unit_index]}"
+    else:
+        # Remove trailing .00 and unnecessary decimals
+        formatted = f"{size:.2f}".rstrip('0').rstrip('.')
+        return f"{formatted} {units[unit_index]}"
 
 async def get_shortlink(chat_id, link):
     settings = await get_settings(chat_id) #fetching settings for group

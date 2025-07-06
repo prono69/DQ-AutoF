@@ -7,7 +7,7 @@ from info import ADMINS
 from info import INDEX_REQ_CHANNEL as LOG_CHANNEL
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from utils import temp
+from utils import temp, humanbytes
 import re
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -183,3 +183,54 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
             await msg.edit(f'Error: {e}')
         else:
             await msg.edit(f'Succesfully saved <code>{total_files}</code> to dataBase!\nDuplicate Files Skipped: <code>{duplicate}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nNon-Media messages skipped: <code>{no_media + unsupported}</code>(Unsupported Media - `{unsupported}` )\nErrors Occurred: <code>{errors}</code>')
+
+
+@Client.on_message(filters.command('save') & filters.user(ADMINS) & filters.reply)
+async def save_single_file(bot, message):
+    """Save a single file to database when replied with /isave command"""
+    reply = message.reply_to_message
+    
+    if reply.empty:
+        return await message.reply("The replied message doesn't exist or was deleted.")
+    
+    if not reply.media:
+        return await message.reply("Please reply to a media message (video/audio/document) to save it.")
+    
+    if reply.media not in [enums.MessageMediaType.VIDEO, enums.MessageMediaType.AUDIO, enums.MessageMediaType.DOCUMENT]:
+        return await message.reply("Unsupported media type. Only video, audio and documents are supported.")
+    
+    msg = await message.reply("<i>Checking media and saving to database...</i>", quote=True)
+    
+    try:
+        media = getattr(reply, reply.media.value, None)
+        if not media:
+            return await msg.edit("❌ Error: Could not extract media information.")
+            
+        media.file_type = reply.media.value
+        media.caption = reply.caption
+        
+        # Get filename for logging
+        file_name = getattr(media, "file_name", "NO_FILE")
+        
+        saved, status = await save_file(media)
+        
+        if saved:
+            await msg.edit(
+                f"✅ <b>Successfully saved file to database!</b>\n\n"
+                f"<b>File Name:</b> <code>{file_name}</code>\n"
+                f"<b>File ID:</b> <code>{media.file_id}</code>\n"
+                f"<b>Type:</b> <code>{media.file_type}</code>\n"
+                f"<b>Size:</b> <code>{humanbytes(media.file_size)}</code>"
+            )
+        elif status == 0:
+            await msg.edit(
+                f"ℹ️ <b>File already exists in database</b>\n\n"
+                f"<code>{file_name}</code>\n"
+                f"<i>No duplicates were created.</i>"
+            )
+        elif status == 2:
+            await msg.edit("❌ <b>Error occurred while saving file to database.</b>\n\n<i>Check logs for details.</i>")
+            
+    except Exception as e:
+        logger.exception(f"Error in /isave command: {e}")
+        await msg.edit(f"❌ <b>Error:</b> <code>{str(e)}</code>")
