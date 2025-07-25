@@ -12,7 +12,7 @@ from info import ADMINS
 from plugins.helpers.terminal import Terminal
 
 
-@Client.on_message(filters.command("eval") & filters.user(ADMINS))
+@Client.on_message(filters.command("val") & filters.user(ADMINS))
 async def eval(client, message):
     status_message = await message.reply_text("Processing ...")
     cmd = message.text.split(" ", maxsplit=1)[1]
@@ -77,9 +77,7 @@ async def aexec(code, client, message):
   exec("async def __aexec(client, message, r, reply, p): "+ "".join(f"\n {l_}" for l_ in code.split("\n")))
   return await locals()["__aexec"](client, message, r, reply, p)
 
-    
-    
-    
+
 @Client.on_message(filters.command("term") & filters.user(ADMINS))
 async def teml(bot, update):
     cmd = update.text.split(" ", 1)
