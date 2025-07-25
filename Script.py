@@ -1,4 +1,3 @@
-from database.caption_db import get_caption_template
 from os import environ
 
 class script(object):
@@ -215,10 +214,11 @@ Nᴀᴍᴇ - {}"""
 """
     @staticmethod
     async def get_caption():
+        from database.caption_db import get_caption_template
         return (
             get_caption_template()
             or environ.get("CUSTOM_FILE_CAPTION")
-            or Script.CAPTION
+            or script.CAPTION
         )
 
     IMDB_TEMPLATE_TXT = """
