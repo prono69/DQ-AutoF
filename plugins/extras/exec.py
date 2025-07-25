@@ -1,8 +1,10 @@
 import asyncio
-import os
 import logging
+import os
 from io import BytesIO
+
 from pyrogram import Client, filters
+
 from info import ADMINS
 
 MAX_MESSAGE_LENGTH = 4096
@@ -37,10 +39,14 @@ async def execution(_, message):
             cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )
         try:
-            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=COMMAND_TIMEOUT)
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(), timeout=COMMAND_TIMEOUT
+            )
         except asyncio.TimeoutError:
             await process.kill()  # Kill the process if it times out
-            await status_message.edit("❌ **Timeout**: The command took too long to execute.")
+            await status_message.edit(
+                "❌ **Timeout**: The command took too long to execute."
+            )
             return
 
         e = stderr.decode().strip() if stderr else "😂"
@@ -74,13 +80,15 @@ async def execution(_, message):
         await reply_to_.reply(f"❌ **Error**: {str(ex)}", quote=True)
     finally:
         await status_message.delete()
-        
-        
+
 
 @Client.on_message(filters.command("bhis") & filters.user(ADMINS))
 async def show_history(_, message):
     # Add numbering to each command and wrap in <code> tags
-    formatted_history = "\n".join(f"<b>{i + 1}.</b> <code>{cmd}</code>" for i, cmd in enumerate(reversed(command_history)))
+    formatted_history = "\n".join(
+        f"<b>{i + 1}.</b> <code>{cmd}</code>"
+        for i, cmd in enumerate(reversed(command_history))
+    )
 
     # Check if the message exceeds Telegram's character limit
     if len(formatted_history) > MAX_MESSAGE_LENGTH:
@@ -94,4 +102,6 @@ async def show_history(_, message):
             )
     else:
         # Send as a regular message
-        await message.reply_text(f"<b>Command History:</b>\n{formatted_history}", quote=True)
+        await message.reply_text(
+            f"<b>Command History:</b>\n{formatted_history}", quote=True
+        )
