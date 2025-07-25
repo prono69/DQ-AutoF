@@ -218,7 +218,7 @@ Nᴀᴍᴇ - {}"""
         return (
             get_caption_template()
             or environ.get("CUSTOM_FILE_CAPTION")
-            or script.CAPTION
+            or CAPTION
         )
 
     IMDB_TEMPLATE_TXT = """
