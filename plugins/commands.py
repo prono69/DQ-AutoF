@@ -935,7 +935,7 @@ async def set_caption(_, message):
     globals()["CUSTOM_FILE_CAPTION"] = template  # Immediate update
     await message.reply("✅ Caption template updated!")
     
-@Client.on_message(filters.command("viewcap") & filters.admin)
+@Client.on_message(filters.command("viewcap") & filters.user(ADMINS))
 async def view_caption(_, message):
     current = get_caption_template() or "No custom template set (using default)"
     
