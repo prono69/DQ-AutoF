@@ -13,6 +13,7 @@ from database.ia_filterdb import Media, Media2, choose_mediaDB, db as clientDB
 from database.users_chats_db import db
 from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, PORT, SECONDDB_URI
 from utils import temp
+from os import environ
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 from Script import script 
@@ -68,6 +69,9 @@ class Bot(Client):
         now = datetime.now(tz)
         time = now.strftime("%-I:%M:%S %p")  # Note the - before I (Linux/Mac)
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
+        globals()["CUSTOM_FILE_CAPTION"] = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", "{script.CAPTION}")
+        globals()["BATCH_FILE_CAPTION"] = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
+        logging.info("Caption Loaded")
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"

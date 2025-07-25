@@ -932,9 +932,10 @@ async def set_caption(_, message):
         return await message.reply("ℹ️ **Usage:**\n1. `/setcaption Your {file_name} Template`\n2. Reply to a message with `/setcaption`")
 
     set_caption_template(template)  # From database.py
+    globals()["CUSTOM_FILE_CAPTION"] = template  # Immediate update
     await message.reply("✅ Caption template updated!")
     
-@Client.on_message(filters.command("viewcaption") & filters.admin)
+@Client.on_message(filters.command("viewcap") & filters.admin)
 async def view_caption(_, message):
     current = get_caption_template() or "No custom template set (using default)"
     
