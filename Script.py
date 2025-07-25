@@ -1,3 +1,6 @@
+from database.caption_db import get_caption_template
+from os import environ
+
 class script(object):
     START_TXT = """<b>Kᴏɴɪᴄʜɪᴡᴀ {},
 Mʏ Nᴀᴍᴇ Is <a href=https://t.me/{}>{}</a>, I Cᴀɴ Pʀᴏᴠɪᴅᴇ Mᴏᴠɪᴇs, Jᴜsᴛ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ Aɴᴅ Eɴᴊᴏʏ 😍</b>"""
@@ -210,6 +213,13 @@ Nᴀᴍᴇ - {}"""
 </b>
 <b>▫️ Cᴀᴘᴛɪᴏɴ :</b> <i>{file_caption}</i>
 """
+    @staticmethod
+    async def get_caption():
+        return (
+            get_caption_template()
+            or environ.get("CUSTOM_FILE_CAPTION")
+            or Script.CAPTION
+        )
 
     IMDB_TEMPLATE_TXT = """
 <b>𝙃𝙚𝙮 {message.from_user.mention},</b>

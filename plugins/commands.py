@@ -10,6 +10,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
+from database.caption_db import set_caption_template, get_caption_template
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, IS_VERIFY, HOW_TO_VERIFY
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp, verify_user, check_token, check_verification, get_token, send_all, humanbytes
 from database.connections_mdb import active_connection
@@ -918,3 +919,30 @@ async def stats(bot, update):
     msg = await bot.send_message(chat_id=update.chat.id, text="__𝖯𝗋𝗈𝖼𝖾𝗌𝗌𝗂𝗇𝗀...__", parse_mode=enums.ParseMode.MARKDOWN)         
     await msg.edit_text(text=ms_g, parse_mode=enums.ParseMode.HTML)
      
+
+@Client.on_message(filters.command("setcap") & filters.user(ADMINS))
+async def set_caption(_, message):
+    # Check if replying to a message
+    if message.reply_to_message and message.reply_to_message.text:
+        template = message.reply_to_message.text
+    # Check for direct text input
+    elif len(message.text.split()) > 1:
+        template = message.text.split(maxsplit=1)[1]
+    else:
+        return await message.reply("ℹ️ **Usage:**\n1. `/setcaption Your {file_name} Template`\n2. Reply to a message with `/setcaption`")
+
+    set_caption_template(template)  # From database.py
+    await message.reply("✅ Caption template updated!")
+    
+@Client.on_message(filters.command("viewcaption") & filters.admin)
+async def view_caption(_, message):
+    current = get_caption_template() or "No custom template set (using default)"
+    
+    await message.reply(
+        f"📝 **Current Caption Template:**\n"
+        f"```\n{current}\n```\n"
+        f"**Placeholders Available:**\n"
+        f"- `{file_name}`\n"
+        f"- `{file_size}`\n"
+        f"- `{file_caption}`"
+    )
