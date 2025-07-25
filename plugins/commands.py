@@ -943,7 +943,7 @@ async def view_caption(_, message):
         f"📝 **Current Caption Template:**\n"
         f"```\n{current}\n```\n"
         f"**Placeholders Available:**\n"
-        f"- `{file_name}`\n"
-        f"- `{file_size}`\n"
-        f"- `{file_caption}`"
+        "- `{file_name}`\n"
+        "- `{file_size}`\n"
+        "- `{file_caption}`"
     )
