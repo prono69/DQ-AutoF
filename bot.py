@@ -69,7 +69,7 @@ class Bot(Client):
         now = datetime.now(tz)
         time = now.strftime("%-I:%M:%S %p")  # Note the - before I (Linux/Mac)
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
-        globals()["CUSTOM_FILE_CAPTION"] = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", "{script.CAPTION}")
+        globals()["CUSTOM_FILE_CAPTION"] = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
         globals()["BATCH_FILE_CAPTION"] = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
         logging.info("Caption Loaded")
         app = web.AppRunner(await web_server())
