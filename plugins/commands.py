@@ -959,7 +959,7 @@ async def view_caption(_, message):
     )
     
 @Client.on_message(filters.command("resetcap") & filters.user(ADMINS))
-async def reset_caption_handler(client, message: Message):
+async def reset_caption_handler(client, message):
     # Delete from DBs
     reset_caption_template()
 
