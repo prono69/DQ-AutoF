@@ -72,7 +72,7 @@ class Bot(Client):
         import sys
         module = sys.modules['info']
         # Set initial values
-        module.CUSTOM_FILE_CAPTION = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", "")
+        module.CUSTOM_FILE_CAPTION = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
         module.BATCH_FILE_CAPTION = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", module.CUSTOM_FILE_CAPTION)
         app = web.AppRunner(await web_server())
         await app.setup()
