@@ -28,3 +28,8 @@ def set_caption_template(template_text: str):
         {"$set": {"text": template_text}},
         upsert=True
     )
+    
+def reset_caption_template():
+    """Delete the caption from both DBs"""
+    captions_col.delete_one({"type": "global"})
+    captions_col_secondary.delete_one({"type": "global"})

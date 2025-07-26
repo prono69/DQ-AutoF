@@ -10,7 +10,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
-from database.caption_db import set_caption_template, get_caption_template
+from database.caption_db import set_caption_template, get_caption_template, reset_caption_template
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, REQST_CHANNEL, SUPPORT_CHAT_ID, MAX_B_TN, IS_VERIFY, HOW_TO_VERIFY
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp, verify_user, check_token, check_verification, get_token, send_all, humanbytes
 from database.connections_mdb import active_connection
@@ -957,3 +957,14 @@ async def view_caption(_, message):
         "- `{file_size}`\n"
         "- `{file_caption}`"
     )
+    
+@Client.on_message(filters.command("resetcap") & filters.user(ADMINS))
+async def reset_caption_handler(client, message: Message):
+    # Delete from DBs
+    reset_caption_template()
+
+    # Set back to default
+    info.CUSTOM_FILE_CAPTION = f"{script.CAPTION}"
+    info.BATCH_FILE_CAPTION = info.CUSTOM_FILE_CAPTION
+
+    await message.reply_text("✅ Caption has been reset to default.")

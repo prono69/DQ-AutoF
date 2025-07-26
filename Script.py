@@ -1,6 +1,6 @@
 from os import environ
 
-class script(object):
+class script:
     START_TXT = """<b>Kᴏɴɪᴄʜɪᴡᴀ {},
 Mʏ Nᴀᴍᴇ Is <a href=https://t.me/{}>{}</a>, I Cᴀɴ Pʀᴏᴠɪᴅᴇ Mᴏᴠɪᴇs, Jᴜsᴛ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ Aɴᴅ Eɴᴊᴏʏ 😍</b>"""
 
