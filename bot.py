@@ -62,20 +62,24 @@ class Bot(Client):
         temp.B_NAME = me.first_name
         self.username = '@' + me.username
         logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
-        logging.info(LOG_STR)
-        logging.info(script.LOGO)
         tz = pytz.timezone('Asia/Kolkata')
         today = date.today()
         now = datetime.now(tz)
         time = now.strftime("%-I:%M:%S %p")  # Note the - before I (Linux/Mac)
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
-        globals()["CUSTOM_FILE_CAPTION"] = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
-        globals()["BATCH_FILE_CAPTION"] = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
-        logging.info("Caption Loaded")
+        # PROPER initialization
+        from info import CUSTOM_FILE_CAPTION as _, BATCH_FILE_CAPTION as __  # Force module load
+        import sys
+        module = sys.modules['info']
+        # Set initial values
+        module.CUSTOM_FILE_CAPTION = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", "")
+        module.BATCH_FILE_CAPTION = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", module.CUSTOM_FILE_CAPTION)
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
         await web.TCPSite(app, bind_address, PORT).start()
+        logging.info(LOG_STR)
+        logging.info(script.LOGO)
 
     async def stop(self, *args):
         await super().stop()
