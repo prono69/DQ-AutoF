@@ -17,6 +17,7 @@ from database.connections_mdb import active_connection
 import re
 import json
 import base64
+import info
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
@@ -922,20 +923,27 @@ async def stats(bot, update):
 
 @Client.on_message(filters.command("setcap") & filters.user(ADMINS))
 async def set_caption(_, message):
-    # Check if replying to a message
+    # Try to get template from a replied message
     if message.reply_to_message and message.reply_to_message.text:
-        template = message.reply_to_message.text
-    # Check for direct text input
-    elif len(message.text.split()) > 1:
-        template = message.text.split(maxsplit=1)[1]
+        template = message.reply_to_message.text.strip()
+    # Or from command arguments
+    elif len(message.text.split(maxsplit=1)) > 1:
+        template = message.text.split(maxsplit=1)[1].strip()
     else:
-        return await message.reply("ℹ️ **Usage:**\n1. `/setcaption Your {file_name} Template`\n2. Reply to a message with `/setcaption`")
+        return await message.reply(
+            "ℹ️ **Usage:**\n"
+            "1. Reply to a message with `/setcap`\n"
+            "2. Or use `/setcap Your {file_name} template`"
+        )
 
-    set_caption_template(template)  # From database.py
-    import sys
-    module = sys.modules['info']
-    module.CUSTOM_FILE_CAPTION = template  # Updates everywhere instantly
-    await message.reply("✅ Caption template updated!")
+    # Save to DB
+    set_caption_template(template)
+
+    # ✅ Update live runtime caption used globally
+    info.CUSTOM_FILE_CAPTION = template
+    info.BATCH_FILE_CAPTION = template  # optional: if you want both updated
+
+    await message.reply("✅ **Caption template updated successfully!**")
     
 @Client.on_message(filters.command("viewcap") & filters.user(ADMINS))
 async def view_caption(_, message):

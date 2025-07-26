@@ -68,12 +68,10 @@ class Bot(Client):
         time = now.strftime("%-I:%M:%S %p")  # Note the - before I (Linux/Mac)
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
         # PROPER initialization
-        from info import CUSTOM_FILE_CAPTION as _, BATCH_FILE_CAPTION as __  # Force module load
-        import sys
-        module = sys.modules['info']
+        import info
         # Set initial values
-        module.CUSTOM_FILE_CAPTION = await script.get_caption() or environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
-        module.BATCH_FILE_CAPTION = await script.get_caption() or environ.get("BATCH_FILE_CAPTION", module.CUSTOM_FILE_CAPTION)
+        info.CUSTOM_FILE_CAPTION = await script.get_caption()
+        info.BATCH_FILE_CAPTION = info.CUSTOM_FILE_CAPTION
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
