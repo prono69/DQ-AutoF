@@ -1,24 +1,26 @@
 # Credits by @neomatrix90
 
 import time
-import requests
-from random import choice
 from datetime import datetime as dt
+from random import choice
 
-from pyrogram import filters, Client
+import requests
+from pyrogram import Client, filters
 from pyrogram.types import (
-    Message,
     InlineQuery,
     InlineQueryResultArticle,
     InlineQueryResultPhoto,
     InputTextMessageContent,
+    Message,
 )
-from plugins import StartTime
+
 from info import ADMINS
+from plugins import StartTime
 from utils import get_readable_time
 
 PING_DISABLE_NONPREM = {}
 ANIME_WAIFU_IS_RANDOM = {}
+
 
 def waifu_hentai():
     LIST_SFW_JPG = ["waifu", "blowjob", "neko"]
@@ -30,6 +32,7 @@ def waifu_hentai():
     response = requests.get(waifu_param).json()
     return response["url"]
 
+
 def waifu_random():
     LIST_SFW_JPG = ["neko", "waifu", "megumin", "shinobu"]
     waifu_link = "https"
@@ -40,7 +43,10 @@ def waifu_random():
     response = requests.get(waifu_param).json()
     return response["url"]
 
-def get_caption(client, duration: float, server_status: str, uptime: str, is_premium: bool) -> str:
+
+def get_caption(
+    client, duration: float, server_status: str, uptime: str, is_premium: bool
+) -> str:
     """Generate the caption for the ping response."""
     if is_premium:
         return f"**Pong !!** `{duration}ms`\n**Server:** {server_status}\n**Uptime** - `{uptime}`\n"
@@ -51,7 +57,16 @@ def get_caption(client, duration: float, server_status: str, uptime: str, is_pre
         f"🤴 **Oᴡɴᴇʀ :** {client.me.mention}"
     )
 
-async def send_ping_response(client, message: Message, duration: float, server_status: str, uptime: str, is_premium: bool, photo=None):
+
+async def send_ping_response(
+    client,
+    message: Message,
+    duration: float,
+    server_status: str,
+    uptime: str,
+    is_premium: bool,
+    photo=None,
+):
     """Send the ping response with optional photo."""
     caption = get_caption(client, duration, server_status, uptime, is_premium)
     if photo:
@@ -59,7 +74,10 @@ async def send_ping_response(client, message: Message, duration: float, server_s
     else:
         await message.reply_text(caption)
 
-@Client.on_message(filters.command("pingset") & filters.user(ADMINS) & ~filters.forwarded)
+
+@Client.on_message(
+    filters.command("pingset") & filters.user(ADMINS) & ~filters.forwarded
+)
 async def pingsetsetting(client, message: Message):
     global PING_DISABLE_NONPREM, ANIME_WAIFU_IS_RANDOM
     args = message.text.lower().split()[1:]
@@ -67,19 +85,32 @@ async def pingsetsetting(client, message: Message):
 
     if chat.type != "private" and args:
         if args[0] == "waifu":
-            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {"waifu": True, "hentai": False}
+            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {
+                "waifu": True,
+                "hentai": False,
+            }
             await message.reply_text(f"__Turned on ping {args[0]}__")
         elif args[0] == "hentai":
-            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {"waifu": False, "hentai": True}
+            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {
+                "waifu": False,
+                "hentai": True,
+            }
             await message.reply_text(f"__Turned on ping {args[0]}__")
         elif args[0] in ("no", "off", "false"):
             PING_DISABLE_NONPREM[message.from_user.id] = False
-            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {"waifu": False, "hentai": False}
+            ANIME_WAIFU_IS_RANDOM[message.from_user.id] = {
+                "waifu": False,
+                "hentai": False,
+            }
             await message.reply_text("__Turned off picture ping__")
     else:
-        ping_mode = "On" if PING_DISABLE_NONPREM.get(message.from_user.id) else \
-                    "Anime" if ANIME_WAIFU_IS_RANDOM.get(message.from_user.id) else "Off"
+        ping_mode = (
+            "On"
+            if PING_DISABLE_NONPREM.get(message.from_user.id)
+            else "Anime" if ANIME_WAIFU_IS_RANDOM.get(message.from_user.id) else "Off"
+        )
         await message.reply_text(f"**Ping Mode:** `{ping_mode}`")
+
 
 @Client.on_message(filters.command("ping") & ~filters.forwarded)
 async def custom_ping_handler(client, message: Message):
@@ -95,20 +126,30 @@ async def custom_ping_handler(client, message: Message):
     server_status = "Sexy Maid Online"
 
     if PING_DISABLE_NONPREM.get(message.from_user.id):
-        await lol.edit_text(get_caption(client, duration, server_status, uptime, is_premium))
+        await lol.edit_text(
+            get_caption(client, duration, server_status, uptime, is_premium)
+        )
         return
 
     if is_anime:
-        photo = waifu_random() if is_anime.get("anime") else waifu_hentai() if is_anime.get("hentai") else None
+        photo = (
+            waifu_random()
+            if is_anime.get("anime")
+            else waifu_hentai() if is_anime.get("hentai") else None
+        )
         if photo:
-            await send_ping_response(client, message, duration, server_status, uptime, is_premium, photo)
+            await send_ping_response(
+                client, message, duration, server_status, uptime, is_premium, photo
+            )
             await lol.delete()
             return
 
-    await send_ping_response(client, message, duration, server_status, uptime, is_premium)
+    await send_ping_response(
+        client, message, duration, server_status, uptime, is_premium
+    )
     await lol.delete()
-    
-    
+
+
 # Inline query handler for @bot ping
 @Client.on_inline_query(filters.regex("^ping$"))
 async def ping_inline_query(client, inline_query: InlineQuery):
@@ -121,11 +162,17 @@ async def ping_inline_query(client, inline_query: InlineQuery):
     server_status = "Sexy Maid Online"
 
     # Prepare the response message
-    response_message = get_caption(client, 0, server_status, uptime, is_premium)  # Temporarily set latency to 0
+    response_message = get_caption(
+        client, 0, server_status, uptime, is_premium
+    )  # Temporarily set latency to 0
 
     # Check if the user has anime/hentai preferences
     if is_anime:
-        photo_url = waifu_random() if is_anime.get("anime") else waifu_hentai() if is_anime.get("hentai") else None
+        photo_url = (
+            waifu_random()
+            if is_anime.get("anime")
+            else waifu_hentai() if is_anime.get("hentai") else None
+        )
         if photo_url:
             # Record the end time
             end = dt.now()
@@ -133,7 +180,9 @@ async def ping_inline_query(client, inline_query: InlineQuery):
             duration = round(duration_)
 
             # Update the response message with the correct latency
-            response_message = get_caption(client, duration, server_status, uptime, is_premium)
+            response_message = get_caption(
+                client, duration, server_status, uptime, is_premium
+            )
 
             # Send photo response
             result = InlineQueryResultPhoto(
@@ -152,7 +201,8 @@ async def ping_inline_query(client, inline_query: InlineQuery):
     duration = round(duration_)
 
     # Update the response message with the correct latency
-    response_message = get_caption(client, duration, server_status, uptime, is_premium)
+    response_message = get_caption(
+        client, duration, server_status, uptime, is_premium)
 
     # Default text response
     result = InlineQueryResultArticle(
@@ -161,4 +211,3 @@ async def ping_inline_query(client, inline_query: InlineQuery):
         description="Click to check bot's ping and status",
     )
     await inline_query.answer([result], cache_time=1)
-    
