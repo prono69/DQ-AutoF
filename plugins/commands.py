@@ -881,7 +881,7 @@ async def shortlink(bot, message):
     await reply.edit_text(f"<b>Sᴜᴄᴄᴇssғᴜʟʟʏ ᴀᴅᴅᴇᴅ sʜᴏʀᴛʟɪɴᴋ API ғᴏʀ {title}.\n\nCᴜʀʀᴇɴᴛ Sʜᴏʀᴛʟɪɴᴋ Wᴇʙsɪᴛᴇ: <code>{shortlink_url}</code>\nCᴜʀʀᴇɴᴛ API: <code>{api}</code></b>")
 
 
-@Client.on_message(filters.command("ping"))
+@Client.on_message(filters.command("lping"))
 async def ping(_, message):
     start_t = time.time()
     rm = await message.reply_text("...........")

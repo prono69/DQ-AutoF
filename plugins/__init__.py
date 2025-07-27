@@ -1,6 +1,8 @@
 from aiohttp import web
 from .route import routes
+import time
 
+StartTime = time.time()
 
 async def web_server():
     web_app = web.Application(client_max_size=30000000)

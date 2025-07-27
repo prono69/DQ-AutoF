@@ -3,6 +3,7 @@ import io
 import os
 import sys
 import traceback
+import textwrap
 import logging
 from pprint import pformat  # For pretty-printing
 from pyrogram import Client, filters
@@ -90,11 +91,13 @@ async def eval_command(client, message):
 
 
 async def aexec(code, client, message):
-    indent = "    "  # 4 spaces for consistent indentation
-    
-    # Create a StringIO object to capture printed output
+    indent = "    "
     print_output = io.StringIO()
+
+    # Strip input and split into lines
+    lines = [line.strip() for line in code.strip().split("\n") if line.strip()]
     
+    # Generate function header
     header = (
         "async def __aexec(client, message, print_output):\n"
         f"{indent}import os\n"
@@ -107,40 +110,38 @@ async def aexec(code, client, message):
         f"{indent}c = client\n"
         f"{indent}to_photo = message.reply_photo\n"
         f"{indent}to_video = message.reply_video\n"
-        f"{indent}# Override print to capture output\n"
         f"{indent}def p(*args, **kwargs):\n"
-        f"{indent}{indent}import builtins\n"
-        f"{indent}{indent}sep = kwargs.get('sep', ' ')\n"
-        f"{indent}{indent}end = kwargs.get('end', '\\n')\n"
-        f"{indent}{indent}output = sep.join(str(arg) for arg in args) + end\n"
-        f"{indent}{indent}print_output.write(output)\n"
-        f"{indent}{indent}builtins.print(*args, **kwargs)  # Also print to console\n"
-        f"{indent}# Alias p to print\n"
+        f"{indent*2}import builtins\n"
+        f"{indent*2}sep = kwargs.get('sep', ' ')\n"
+        f"{indent*2}end = kwargs.get('end', '\\n')\n"
+        f"{indent*2}output = sep.join(pformat(arg) for arg in args) + end\n"
+        f"{indent*2}print_output.write(output)\n"
+        f"{indent*2}builtins.print(*args, **kwargs)\n"
         f"{indent}print = p\n"
         f"{indent}_result = None\n"
     )
-    
-    lines = code.split("\n")
-    try:
-        # Try to compile the last line as an expression.
-        compile(lines[-1], "<string>", "eval")
-        # Indent all lines except the last.
-        body = "\n".join(indent + l for l in lines[:-1])
-        # Append the last line to capture its return value.
-        last_line = "\n" + indent + "_result = " + lines[-1]
-    except SyntaxError:
-        body = "\n".join(indent + l for l in lines)
-        last_line = ""
-    
-    # Add a final return statement to return the captured result.
-    return_line = "\n" + indent + "return _result, print_output.getvalue()\n"
-    full_code = header + body + last_line + return_line
-    
-    # Dynamically compile and execute the function definition.
+
+    # Handle return line
+    if lines and lines[-1].startswith("return "):
+        # Convert 'return x' => '_result = x'
+        return_expr = lines[-1][len("return "):]
+        body = "\n".join(f"{indent}{line}" for line in lines[:-1])
+        body += f"\n{indent}_result = {return_expr}"
+    else:
+        # Default: execute all lines and capture result of last line
+        body = "\n".join(f"{indent}{line}" for line in lines[:-1]) if len(lines) > 1 else ""
+        if lines:
+            body += f"\n{indent}_result = {lines[-1]}"
+
+    # Add return line to return both values
+    return_line = f"\n{indent}return _result, print_output.getvalue()\n"
+
+    full_code = header + body + return_line
+
+    # Compile and execute the function definition
     exec(full_code)
     result, printed_output = await locals()["__aexec"](client, message, print_output)
-    
-    # Return both the result and printed output
+
     return {
         "return_value": result,
         "printed_output": printed_output
