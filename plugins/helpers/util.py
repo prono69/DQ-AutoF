@@ -1,9 +1,12 @@
-import json
 import ast
-from typing import Any, Union
+import json
 from json import JSONDecodeError
+from typing import Any, Union
 
-def json_parser(data: Any, indent: Union[int, None] = None, ensure_ascii: bool = False) -> Any:
+
+def json_parser(
+    data: Any, indent: Union[int, None] = None, ensure_ascii: bool = False
+) -> Any:
     """
     Parses and formats JSON-like or Python-like data structures.
 

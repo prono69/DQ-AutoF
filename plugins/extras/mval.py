@@ -1,12 +1,14 @@
 import asyncio
 import io
+import logging
 import os
 import sys
-import traceback
 import textwrap
-import logging
+import traceback
 from pprint import pformat  # For pretty-printing
+
 from pyrogram import Client, filters
+
 from info import ADMINS
 from plugins.helpers.util import json_parser
 
@@ -49,16 +51,21 @@ async def eval_command(client, message):
     else:
         stdout = redirected_output.getvalue()
         stderr = redirected_error.getvalue()
-        formatted_result = json_parser(result, indent=4) if result is not None else None
-        formatted_printed = json_parser(printed_output.strip(), indent=4) if printed_output.strip() else None
+        formatted_result = json_parser(
+            result, indent=4) if result is not None else None
+        formatted_printed = (
+            json_parser(printed_output.strip(), indent=4)
+            if printed_output.strip()
+            else None
+        )
         if stderr:
             evaluation = f"⚠️ **Stderr**:\n<code>{stderr}</code>"
         elif stdout:
             evaluation = f"<code>{stdout}</code>"
         elif printed_output:
-            evaluation = f"<code>{formatted_printed}</code>"    
+            evaluation = f"<code>{formatted_printed}</code>"
         elif result is not None:
-            evaluation = f"<code>{formatted_result}</code>"    
+            evaluation = f"<code>{formatted_result}</code>"
         else:
             evaluation = "✅ **Success**"
     finally:
@@ -96,7 +103,7 @@ async def aexec(code, client, message):
 
     # Strip input and split into lines
     lines = [line.strip() for line in code.strip().split("\n") if line.strip()]
-    
+
     # Generate function header
     header = (
         "async def __aexec(client, message, print_output):\n"
@@ -129,7 +136,11 @@ async def aexec(code, client, message):
         body += f"\n{indent}_result = {return_expr}"
     else:
         # Default: execute all lines and capture result of last line
-        body = "\n".join(f"{indent}{line}" for line in lines[:-1]) if len(lines) > 1 else ""
+        body = (
+            "\n".join(f"{indent}{line}" for line in lines[:-1])
+            if len(lines) > 1
+            else ""
+        )
         if lines:
             body += f"\n{indent}_result = {lines[-1]}"
 
@@ -142,18 +153,17 @@ async def aexec(code, client, message):
     exec(full_code)
     result, printed_output = await locals()["__aexec"](client, message, print_output)
 
-    return {
-        "return_value": result,
-        "printed_output": printed_output
-    }
-
+    return {"return_value": result, "printed_output": printed_output}
 
 
 # Add a command to view history
 @Client.on_message(filters.command("ehis") & filters.user(ADMINS))
 async def show_history(_, message):
     # Add numbering to each command and wrap in <code> tags
-    formatted_history = "\n".join(f"<b>{i + 1}.</b> <code>{cmd}</code>" for i, cmd in enumerate(reversed(eval_history)))
+    formatted_history = "\n".join(
+        f"<b>{i + 1}.</b> <code>{cmd}</code>"
+        for i, cmd in enumerate(reversed(eval_history))
+    )
 
     # Check if the message exceeds Telegram's character limit
     if len(formatted_history) > MAX_MESSAGE_LENGTH:
@@ -168,4 +178,6 @@ async def show_history(_, message):
             os.remove("eval_history.txt")
     else:
         # Send as a regular message
-        await message.reply_text(f"<b>EVAL HISTORY:</b>\n{formatted_history}", quote=True)
+        await message.reply_text(
+            f"<b>EVAL HISTORY:</b>\n{formatted_history}", quote=True
+        )
