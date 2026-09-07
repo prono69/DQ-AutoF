@@ -293,7 +293,7 @@ async def list_chats(bot, message):
 
     count = 1
 
-    async for chat in chats:
+    for chat in chats:
         chat_id = chat['id']
 
         try:
