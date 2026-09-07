@@ -287,16 +287,39 @@ async def list_users(bot, message):
 @Client.on_message(filters.command('chats') & filters.user(ADMINS))
 async def list_chats(bot, message):
     raju = await message.reply('Getting List Of chats')
+
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
-    for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
+
+    count = 1
+
+    async for chat in chats:
+        chat_id = chat['id']
+
+        try:
+            tg_chat = await bot.get_chat(chat_id)
+            title = tg_chat.title or tg_chat.first_name or "Unknown"
+
+        except Exception:
+            title = chat['title']
+
+        out += f"**{count}. Title:** `{title}`\n"
+        out += f"   - ID: `{chat_id}`"
+
         if chat['chat_status']['is_disabled']:
-            out += '( Disabled Chat )'
-        out += '\n'
+            out += " ( Disabled Chat )"
+
+        out += "\n\n"
+        count += 1
+
     try:
         await raju.edit_text(out)
+
     except MessageTooLong:
-        with open('chats.txt', 'w+') as outfile:
+        with open('chats.txt', 'w+', encoding='utf-8') as outfile:
             outfile.write(out)
-        await message.reply_document('chats.txt', caption="List Of Chats")
+
+        await message.reply_document(
+            'chats.txt',
+            caption="List Of Chats"
+        )
