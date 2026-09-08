@@ -2,7 +2,12 @@ FROM python:3.12-slim-bookworm
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends git ca-certificates && \
+    apt-get install -y --no-install-recommends \
+        git \
+        ca-certificates \
+        gcc \
+        python3-dev \
+        build-essential && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /DQTheFileDonorBot
