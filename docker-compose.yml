@@ -1,14 +1,16 @@
-version: "3.8"
 services:
-   worker:
-    build: .
-    environment:
-      BOT_TOKEN: $BOT_TOKEN
-      API_ID: $API_ID
-      API_HASH: $API_HASH
-      CHANNELS: $CHANNELS
-      ADMINS: $ADMINS
-      LOG_CHANNEL: $LOG_CHANNEL
-      DATABASE_NAME: $DATABASE_NAME
-      DATABASE_URI: $DATABASE_URI
-      HEROKU_API_KEY: $HEROKU_API_KEY
+  dq-file-donor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dq-the-file-donor:latest
+    container_name: dq-the-file-donor
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Uncomment if the bot needs to expose a port (e.g. webhook mode)
+    # ports:
+    #   - "8000:8000"
+    # Uncomment for persistent data (downloads, DB files, session strings, etc.)
+    # volumes:
+    #   - ./data:/DQTheFileDonorBot/data

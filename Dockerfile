@@ -1,12 +1,18 @@
-FROM python:3.10.9-slim-buster
- 
-RUN apt update && apt upgrade -y
-RUN apt install git -y
-COPY requirements.txt /requirements.txt
- 
-RUN cd /
-RUN pip3 install -U pip && pip3 install -U -r requirements.txt
-RUN mkdir /DQ-The-File-Donor
-WORKDIR /DQ-The-File-Donor
-COPY start.sh /start.sh
-CMD ["/bin/bash", "/start.sh"]
+FROM python:3.10.9-slim-bullseye
+
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends git ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /DQTheFileDonorBot
+
+# Copy requirements first so this layer is cached unless deps change
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -U pip && \
+    pip3 install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the bot's source code
+COPY . .
+
+CMD ["python3", "bot.py"]
