@@ -204,13 +204,11 @@ Nᴀᴍᴇ - {}"""
 𝗠𝗲𝘀𝘀𝗮𝗴𝗲 <b>: {}</b>"""
 
     CAPTION = """
-<b>📂 Fɪʟᴇ ɴᴀᴍᴇ : </b> <code>{file_name}</code>
-<b>
-╭─────── • ◆ • ───────╮
-🔅 Sɪᴢᴇ : {file_size}
-╰─────── • ◆ • ───────╯
-</b>
-<b>▫️ Cᴀᴘᴛɪᴏɴ :</b> <i>{file_caption}</i>
+<b>📁 {file_name}</b>
+
+<i>{file_caption}</i>
+<b>┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈</b>
+<i>⚡ Pᴏᴡᴇʀᴇᴅ ʙʏ <a href="https://t.me/Neko_Drive">@Neko_Drive</a></i>
 """
     @staticmethod
     async def get_caption():
