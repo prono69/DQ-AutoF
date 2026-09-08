@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.10-slim-bookworm
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -12,12 +12,10 @@ RUN apt-get update && \
 
 WORKDIR /DQTheFileDonorBot
 
-# Copy requirements first so this layer is cached unless deps change
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -U pip && \
     pip3 install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the bot's source code
 COPY . .
 
 CMD ["python3", "bot.py"]
