@@ -10,7 +10,7 @@ services:
       - .env
     # Uncomment if the bot needs to expose a port (e.g. webhook mode)
     ports:
-       - "8080:8080"
+       - "9595:9595"
     # Uncomment for persistent data (downloads, DB files, session strings, etc.)
     # volumes:
     #   - ./data:/DQTheFileDonorBot/data
