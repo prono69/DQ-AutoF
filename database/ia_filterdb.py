@@ -173,18 +173,21 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
         max_results = await _resolve_max_results(int(chat_id), max_results)
 
     offset = int(offset)
+    search_str = query.strip() if query else ""
 
-    filter_ = _build_filter(query, file_type)
+    # Build filter dictionary
+    filter_ = _build_filter(search_str, file_type)
     if filter_ is None:
         return [], '', 0
 
-    # Count documents across both databases concurrently
+    # Calculate total results ONLY for the given query filter
     media2_count, media_count = await asyncio.gather(
         Media2.count_documents(filter_),
         Media.count_documents(filter_)
     )
     total_results = media_count + media2_count
 
+    # If NO files match the query, return 0 total immediately
     if total_results == 0:
         return [], '', 0
 
@@ -194,20 +197,17 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
 
     files = []
 
-    # Case 1: Offset lies within Media2
+    # Pagination logic across Media2 and Media
     if offset < media2_count:
         cursor2 = Media2.find(filter_).sort('$natural', -1).skip(offset).limit(max_results)
         fileList2 = await cursor2.to_list(length=max_results)
         files.extend(fileList2)
 
-        # Fill remaining slots from Media if needed
         needed = max_results - len(fileList2)
         if needed > 0 and media_count > 0:
             cursor1 = Media.find(filter_).sort('$natural', -1).limit(needed)
             fileList1 = await cursor1.to_list(length=needed)
             files.extend(fileList1)
-
-    # Case 2: Offset has exceeded Media2, query Media directly
     else:
         media_offset = offset - media2_count
         cursor1 = Media.find(filter_).sort('$natural', -1).skip(media_offset).limit(max_results)
@@ -220,6 +220,7 @@ async def get_search_results(chat_id, query, file_type=None, max_results=10, off
         next_offset_str = str(next_offset)
 
     return files, next_offset_str, total_results
+
 
 
 async def get_bad_files(query, file_type=None, filter=False):
