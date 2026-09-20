@@ -117,18 +117,20 @@ async def inline_search_handler(bot: Client, query: InlineQuery):
         )
 
     if results:
-        switch_text = f"{emoji.FILE_FOLDER} Results - {total}"
+        # Dynamic switch button title text formatting
         if search_str:
-            switch_text += f" for {search_str}"
+            switch_text = f"{emoji.FILE_FOLDER} Results - {total} for {search_str}"
+        else:
+            switch_text = f"{emoji.FILE_FOLDER} Total Files - {total}"
 
         try:
             await query.answer(
                 results=results,
                 is_personal=True,
                 cache_time=CACHE_TIME,
-                switch_pm_text=switch_text[:64],  # Prevent Telegram API length overflow (Max 64 chars)
+                switch_pm_text=switch_text[:64],  # Prevent Telegram API 64-char overflow
                 switch_pm_parameter="start",
-                next_offset=str(next_offset)
+                next_offset=str(next_offset) if next_offset else ""
             )
         except QueryIdInvalid:
             pass  # Query expired before response reached Telegram
@@ -136,9 +138,11 @@ async def inline_search_handler(bot: Client, query: InlineQuery):
             logger.exception("Failed to answer inline query: %s", e)
 
     else:
-        switch_text = f"{emoji.CROSS_MARK} No results"
+        # No results state string formatting
         if search_str:
-            switch_text += f' for "{search_str}"'
+            switch_text = f'{emoji.CROSS_MARK} No results for "{search_str}"'
+        else:
+            switch_text = f'{emoji.CROSS_MARK} No files available'
 
         await query.answer(
             results=[],
