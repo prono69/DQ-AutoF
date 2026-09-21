@@ -8,9 +8,11 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      - TZ=Asia/Kolkata  # Adjust to your timezone
+      
     # Uncomment if the bot needs to expose a port (e.g. webhook mode)
     ports:
        - "9595:9595"
-    # Uncomment for persistent data (downloads, DB files, session strings, etc.)
-    # volumes:
-    #   - ./data:/DQTheFileDonorBot/data
+    volumes:
+      - .:/DQTheFileDonorBot
