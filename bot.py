@@ -36,18 +36,18 @@ class Bot(Client):
             sleep_threshold=10,
         )
 
-    async def start(self):
+    async def start(self, *args, **kwargs):
         b_users, b_chats = await db.get_banned()
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
-        await super().start()
+        await super().start(*args, **kwargs)
         await Media.ensure_indexes()
         await Media2.ensure_indexes()
-        #choose the right db by checking the free space
+        # choose the right db by checking the free space
         stats = await clientDB.command('dbStats')
-        #calculating the free db space from bytes to MB
+        # calculating the free db space from bytes to MB
         free_dbSize = round(512-((stats['dataSize']/(1024*1024))+(stats['indexSize']/(1024*1024))), 2)
-        if SECONDDB_URI and free_dbSize<10: #if the primary db have less than 10MB left, use second DB.
+        if SECONDDB_URI and free_dbSize<10: # if the primary db have less than 10MB left, use second DB.
             tempDict["indexDB"] = SECONDDB_URI
             logging.info(f"Since Primary DB have only {free_dbSize} MB left, Secondary DB will be used to store datas.")
         elif SECONDDB_URI is None:
@@ -65,7 +65,7 @@ class Bot(Client):
         tz = pytz.timezone('Asia/Kolkata')
         today = date.today()
         now = datetime.now(tz)
-        time = now.strftime("%-I:%M:%S %p")  # Note the - before I (Linux/Mac)
+        time = now.strftime("%-I:%M:%S %p")
         await self.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
         # PROPER initialization
         import info
@@ -78,6 +78,7 @@ class Bot(Client):
         await web.TCPSite(app, bind_address, PORT).start()
         logging.info(LOG_STR)
         logging.info(script.LOGO)
+
 
     async def stop(self, *args):
         await super().stop()
