@@ -1,6 +1,6 @@
 import logging
 from uuid import uuid4
-from pyrogram import Client, emoji
+from pyrogram import Client
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -119,9 +119,9 @@ async def inline_search_handler(bot: Client, query: InlineQuery):
     if results:
         # Dynamic switch button title text formatting
         if search_str:
-            switch_text = f"{emoji.FILE_FOLDER} Results - {total} for {search_str}"
+            switch_text = f"📁 Results - {total} for {search_str}"
         else:
-            switch_text = f"{emoji.FILE_FOLDER} Total Files - {total}"
+            switch_text = f"📁 Total Files - {total}"
 
         try:
             await query.answer(
@@ -140,9 +140,9 @@ async def inline_search_handler(bot: Client, query: InlineQuery):
     else:
         # No results state string formatting
         if search_str:
-            switch_text = f'{emoji.CROSS_MARK} No results for "{search_str}"'
+            switch_text = f'❌ No results for "{search_str}"'
         else:
-            switch_text = f'{emoji.CROSS_MARK} No files available'
+            switch_text = f'❌ No files available'
 
         await query.answer(
             results=[],
